@@ -1,0 +1,4 @@
+name: Commander
+version: '${project.version}'
+main: com.acrylic.commander.Commander
+api-version: 1.18
