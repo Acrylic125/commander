@@ -1,6 +1,6 @@
 package com.acrylic.commander.executors;
 
-import com.acrylic.commander.command.ExecutedCommand;
+import com.acrylic.commander.executed.ExecutedCommand;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;

@@ -30,4 +30,4 @@ CommanderCommandExecutor
 CommanderCommandExecutorImpl : CommanderCommandExecutor
 + getArguments(): Collection<CommanderCommandExecutor>
 + getFilters(): Collection<CommandFilter<CommandSender>>
-+ getSenderHandlers(): Map<Class<?>, CommandHandler<?>>
++ getSenderHandlers(): Collection<CommandHandler<?>>
