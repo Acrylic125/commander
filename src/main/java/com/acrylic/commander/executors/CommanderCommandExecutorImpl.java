@@ -60,13 +60,12 @@ public final class CommanderCommandExecutorImpl implements CommanderCommandExecu
         this.aliases = aliases;
     }
 
-    @Nullable
-    private CommanderCommandExecutor findArgument(String argument) {
+    private Optional<CommanderCommandExecutor> findArgument(String argument) {
         for (CommanderCommandExecutor commanderCommandExecutor : this.arguments) {
             if (commanderCommandExecutor.isStringThisCommand(argument))
-                return commanderCommandExecutor;
+                return Optional.of(commanderCommandExecutor);
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -81,10 +80,11 @@ public final class CommanderCommandExecutorImpl implements CommanderCommandExecu
         // Argument check.
         final String argument = executedCommand.getArg(0);
         if (argument != null) {
-            final CommanderCommandExecutor argumentExecutor = this.findArgument(argument);
-            if (argumentExecutor != null) {
+            final Optional<CommanderCommandExecutor> argumentExecutorOptional = this.findArgument(argument);
+            if (argumentExecutorOptional.isPresent()) {
                 // Recreate a new ExecutedCommand object. Do not reuse.
-                argumentExecutor.run(ExecutedCommand.create(executedCommand, executedCommand.getOffsetArgument() + 1));
+                argumentExecutorOptional.get()
+                        .run(ExecutedCommand.create(executedCommand, executedCommand.getOffsetArgument() + 1));
                 return;
             }
         }
