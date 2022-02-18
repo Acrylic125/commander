@@ -2,19 +2,17 @@ package com.acrylic.commander.command;
 
 import com.acrylic.commander.functional.ExecutedCommandConsumer;
 import com.acrylic.commander.functional.ObjectToObject;
-import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public final class CCommandExecutorImpl<S extends CommandSender> implements CCommandExecutor {
+public final class CCommandExecutorImpl<S extends CommandSender>
+        implements CCommandExecutor {
 
-    private final Map<String, CCommandExecutor> arguments = new HashMap<>();
     private final ObjectToObject<CommandSender, Optional<S>> senderExtractor;
+    private Collection<CCommandExecutor> arguments = new Stack<>();
     private String label;
     private Collection<CCommandPredicate<S>> predicates = new Stack<>();
     private ExecutedCommandConsumer<S> handler;
@@ -36,35 +34,42 @@ public final class CCommandExecutorImpl<S extends CommandSender> implements CCom
         return true;
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        Optional<S> extractedSenderOptional = senderExtractor.from(sender);
-        if (!extractedSenderOptional.isPresent())
-            return false;
-        S extractedSender = extractedSenderOptional.get();
-
-        ExecutedCommand<S> executedCommand = new ExecutedCommand<>(extractedSender, command, label, args);
-        if (this.testPredicates(executedCommand))
-            return false;
-
-        this.handler.apply(executedCommand);
+    private boolean tryArgument(ExecutedCommand<CommandSender> executedCommand, String argument) {
+        String comparableArgument = CCommandExecutor.toComparableCommand(argument);
+        for (CCommandExecutor argumentExecutor : this.arguments) {
+            if (comparableArgument.equals(CCommandExecutor.toComparableCommand(argumentExecutor.getLabel()))) {
+                argumentExecutor.run(executedCommand);
+                return true;
+            }
+        }
         return false;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    @Override
+    public void run(ExecutedCommand<CommandSender> executedCommand) {
+        Optional<S> extractedSenderOptional = senderExtractor.from(executedCommand.getSender());
+        if (!extractedSenderOptional.isPresent())
+            return;
+        S extractedSender = extractedSenderOptional.get();
+
+        ExecutedCommand<S> wrappedExecutedCommand = new ExecutedCommand<>(extractedSender, executedCommand.getCommand(), label, executedCommand.getArgs());
+        if (!this.testPredicates(wrappedExecutedCommand))
+            return;
+
+        if (this.tryArgument(executedCommand))
+            return;
+
+        if (this.handler != null)
+            this.handler.accept(wrappedExecutedCommand);
     }
 
-    public void setPredicates(Collection<CCommandPredicate<S>> predicates) {
-        this.predicates = predicates;
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+
     }
 
     public void setHandler(ExecutedCommandConsumer<S> handler) {
         this.handler = handler;
-    }
-
-    public void setAliases(String[] aliases) {
-        this.aliases = aliases;
     }
 
     @Override
@@ -72,24 +77,32 @@ public final class CCommandExecutorImpl<S extends CommandSender> implements CCom
         return this.label;
     }
 
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
     @Override
     public @NotNull String[] getAliases() {
         return this.aliases;
     }
 
-    public void addPermissions(@NotNull CCommandPermissions<S> permissions) {
-        this.addPredicate(permissions);
-    }
-
-    public void addPredicate(@NotNull CCommandPredicate<S> permissions) {
-        this.predicates.add(permissions);
+    public void setAliases(String[] aliases) {
+        this.aliases = aliases;
     }
 
     public @NotNull Collection<CCommandPredicate<S>> getPredicates() {
         return this.predicates;
     }
 
-    public @NotNull Map<String, CCommandExecutor> getArguments() {
-        return this.arguments;
+    public void setPredicates(Collection<CCommandPredicate<S>> predicates) {
+        this.predicates = predicates;
+    }
+
+    public Collection<CCommandExecutor> getArguments() {
+        return arguments;
+    }
+
+    public void setArguments(Collection<CCommandExecutor> arguments) {
+        this.arguments = arguments;
     }
 }

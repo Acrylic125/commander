@@ -1,12 +1,13 @@
-package com.acrylic.commander.command;
+package com.acrylic.commander.executors;
 
+import com.acrylic.commander.command.ExecutedCommand;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
-public interface CCommandExecutor
+public interface CommanderCommandExecutor
         extends CommandExecutor {
 
     @NotNull
@@ -32,5 +33,6 @@ public interface CCommandExecutor
     static String toComparableCommand(String command) {
         return command.toLowerCase(Locale.ROOT);
     }
+
 
 }

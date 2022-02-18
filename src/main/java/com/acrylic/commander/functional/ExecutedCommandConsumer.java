@@ -6,6 +6,6 @@ import org.bukkit.command.CommandSender;
 @FunctionalInterface
 public interface ExecutedCommandConsumer<S extends CommandSender> {
 
-    void apply(ExecutedCommand<S> executedCommand);
+    void accept(ExecutedCommand<S> executedCommand);
 
 }

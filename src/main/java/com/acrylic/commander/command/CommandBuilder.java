@@ -37,7 +37,7 @@ public final class CommandBuilder<S extends CommandSender> {
         return new CommandBuilder<>(PLAYER_SENDER, label);
     }
 
-    private final Map<String, CCommandExecutor> arguments = new HashMap<>();
+    private final Collection<CCommandExecutor> arguments = new Stack<>();
     private final ObjectToObject<CommandSender, Optional<S>> senderExtractor;
     private final Collection<String> aliases = new Stack<>();
     private final String label;
@@ -74,10 +74,21 @@ public final class CommandBuilder<S extends CommandSender> {
         return this;
     }
 
+    public CommandBuilder<S> argument(CCommandExecutor commandExecutor) {
+        this.arguments.add(commandExecutor);
+        return this;
+    }
+
+    public CommandBuilder<S> arguments(CCommandExecutor... commandExecutors) {
+        this.arguments.addAll(Arrays.asList(commandExecutors));
+        return this;
+    }
+
     public CCommandExecutorImpl<S> build() {
         final CCommandExecutorImpl<S> commandExecutor = new CCommandExecutorImpl<>(this.senderExtractor, this.label, this.aliases.toArray(new String[0]));
         commandExecutor.setPredicates(this.predicates);
         commandExecutor.setHandler(this.handler);
+        commandExecutor.setArguments(this.arguments);
         return commandExecutor;
     }
 
