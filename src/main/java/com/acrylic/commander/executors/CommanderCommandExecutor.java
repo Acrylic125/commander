@@ -9,12 +9,60 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 public final class CommanderCommandExecutor
         implements CommandExecutor {
+
+    public static Builder builder(@NotNull String label) {
+        return new Builder(label);
+    }
+
+    public static class Builder {
+        private final Collection<CommanderCommandExecutor> arguments = new Stack<>();
+        private final Collection<CommandPredicate<CommandSender>> prePredicates = new Stack<>();
+        private final Collection<String> aliases = new Stack<>();
+        private final String label;
+        private CommandHandler<CommandSender> handler;
+
+        Builder(String label) {
+            this.label = label;
+        }
+
+        public Builder arg(@NotNull CommanderCommandExecutor arg) {
+            this.arguments.add(arg);
+            return this;
+        }
+
+        public Builder alias(@NotNull String alias) {
+            this.aliases.add(alias);
+            return this;
+        }
+
+        public Builder aliases(@NotNull String... aliases) {
+            Collections.addAll(this.aliases, aliases);
+            return this;
+        }
+
+        public Builder prefilter(@NotNull CommandPredicate<CommandSender> filter) {
+            this.prePredicates.add(filter);
+            return this;
+        }
+
+        public Builder handle(@Nullable CommandHandler<CommandSender> handler) {
+            this.handler = handler;
+            return this;
+        }
+
+        public CommanderCommandExecutor build() {
+            final CommanderCommandExecutor executor = new CommanderCommandExecutor(this.label);
+            executor.setAliases(this.aliases.toArray(new String[0]));
+            executor.setArguments(this.arguments);
+            executor.setPrePredicates(this.prePredicates);
+            executor.setHandler(this.handler);
+            return executor;
+        }
+    }
 
     // The command arguments.
     private Collection<CommanderCommandExecutor> arguments = null;
@@ -27,7 +75,7 @@ public final class CommanderCommandExecutor
     // What should be executed when this command successfully executes.
     private CommandHandler<CommandSender> handler;
 
-    public CommanderCommandExecutor(@NotNull String label) {
+    CommanderCommandExecutor(String label) {
         this.label = label;
     }
 
