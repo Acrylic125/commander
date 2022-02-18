@@ -1,0 +1,33 @@
+ExecutedCommandRecord<T extends CommandSender>
++ getSender(): T
++ getCommand(): Command
++ getLabel(): String
++ getArgs(): String[]
+
+ExecutedCommand<T extends CommandSender>
+- argumentOffset: int
++ getRecord(): ExecutedCommandRecord<T>
++ getSender(): T
++ getArgs(): String[]
++ getArg(int): String
+
+CommandFilter<T extends CommandSender>
++ test(ExecutedCommand<T>): bool
++ onFail(ExecutedCommand<T>): void
+
+CommandHandler<T extends CommandSender>
++ handle(ExecutedCommand<T>): void
+
+CommandHandlerImpl<T extends CommandSender> : CommandHandler<T>
++ getFilters(): Collection<CommandFilter<T>>
+
+CommanderCommandExecutor
++ getLabel(): String
++ getAliases(): String[]
++ isStringThisCommand(String): boolean
++ run(ExecutedCommand<CommandSender>): void
+
+CommanderCommandExecutorImpl : CommanderCommandExecutor
++ getArguments(): Collection<CommanderCommandExecutor>
++ getFilters(): Collection<CommandFilter<CommandSender>>
++ getSenderHandlers(): Map<Class<?>, CommandHandler<?>>

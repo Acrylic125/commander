@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class CommanderCommandExecutorImpl implements CommanderCommandExecutor {
 
-
     @Override
     public @NotNull String getLabel() {
         return null;

@@ -4,10 +4,10 @@ import com.acrylic.commander.command.ExecutedCommand;
 import com.acrylic.commander.functional.ExecutedCommandPredicate;
 import org.bukkit.command.CommandSender;
 
-public interface CommandPredicate<S extends CommandSender> {
+public interface CommandPredicate<T extends CommandSender> {
 
-    ExecutedCommandPredicate<S> getPredicate();
+    boolean test(ExecutedCommand<T> executedCommand);
 
-    void onFail(ExecutedCommand<S> executedCommand);
+    void onFail(ExecutedCommand<T> executedCommand);
 
 }
