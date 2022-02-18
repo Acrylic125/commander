@@ -8,14 +8,20 @@ import java.util.Arrays;
 
 public final class ExecutedCommand<T extends CommandSender> {
 
-    @SuppressWarnings("all")
-    public static <T extends CommandSender> ExecutedCommand<T> create(ExecutedCommand<?> executedCommand) {
+    public static <T extends CommandSender, S extends CommandSender> ExecutedCommand<S> create(ExecutedCommand<T> executedCommand, S commandSender) {
+        return create(executedCommand, commandSender, 0);
+    }
+
+    public static <T extends CommandSender, S extends CommandSender> ExecutedCommand<S> create(ExecutedCommand<T> executedCommand, S commandSender, int offsetArgument) {
+        return create(commandSender, executedCommand.command, executedCommand.label, executedCommand.args, offsetArgument);
+    }
+
+    public static <T extends CommandSender> ExecutedCommand<T> create(ExecutedCommand<T> executedCommand) {
         return create(executedCommand, 0);
     }
 
-    @SuppressWarnings("all")
-    public static <T extends CommandSender> ExecutedCommand<T> create(ExecutedCommand<?> executedCommand, int offsetArgument) {
-        return create((T) executedCommand.sender, executedCommand.command, executedCommand.label, executedCommand.args, offsetArgument);
+    public static <T extends CommandSender> ExecutedCommand<T> create(ExecutedCommand<T> executedCommand, int offsetArgument) {
+        return create(executedCommand.sender, executedCommand.command, executedCommand.label, executedCommand.args, offsetArgument);
     }
 
     public static <T extends CommandSender> ExecutedCommand<T> create(T sender, Command command, String label, String[] args) {
