@@ -1,6 +1,6 @@
 package com.acrylic.commander.functional;
 
-import com.acrylic.commander.command.ExecutedCommand;
+import com.acrylic.commander.executed.ExecutedCommand;
 import org.bukkit.command.CommandSender;
 
 @FunctionalInterface

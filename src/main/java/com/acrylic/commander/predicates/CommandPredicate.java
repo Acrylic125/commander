@@ -4,6 +4,7 @@ import com.acrylic.commander.executed.ExecutedCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface CommandPredicate<T extends CommandSender> {
 
@@ -11,14 +12,13 @@ public interface CommandPredicate<T extends CommandSender> {
 
     void onFail(ExecutedCommand<T> executedCommand);
 
-    static <T extends CommandSender> boolean runPredicates(Collection<CommandPredicate<T>> predicates, ExecutedCommand<T> executedCommand) {
+    static <T extends CommandSender> Optional<CommandPredicate<T>> findPredicates(Collection<CommandPredicate<T>> predicates, ExecutedCommand<T> executedCommand) {
         for (CommandPredicate<T> predicate : predicates) {
             if (predicate.test(executedCommand)) {
-                predicate.onFail(executedCommand);
-                return false;
+                return Optional.of(predicate);
             }
         }
-        return true;
+        return Optional.empty();
     }
 
 }

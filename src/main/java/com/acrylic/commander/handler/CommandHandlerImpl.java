@@ -26,8 +26,6 @@ public class CommandHandlerImpl<T extends CommandSender>
 
     @Override
     public void handle(ExecutedCommand<T> executedCommand) {
-        if (CommandPredicate.runPredicates(this.filters, executedCommand))
-            return;
 
     }
 }

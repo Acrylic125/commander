@@ -5,15 +5,21 @@ import com.acrylic.commander.predicates.CommandPredicate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Stack;
 
-public class CommanderCommandExecutorImpl implements CommanderCommandExecutor {
+public final class CommanderCommandExecutorImpl implements CommanderCommandExecutor {
 
+    // The command arguments.
     private Collection<CommanderCommandExecutor> arguments = new Stack<>();
-    private Collection<CommandPredicate<CommandSender>> predicates = new Stack<>();
+    // Pre predicates are filters that check BEFORE anything. This includes argument checks.
+    private Collection<CommandPredicate<CommandSender>> prePredicates = new Stack<>();
+    // Aliases are alternative names used for this command.
     private String[] aliases;
+    // The main identifier for this command.
     private String label;
 
     public CommanderCommandExecutorImpl(String label) {
@@ -28,12 +34,12 @@ public class CommanderCommandExecutorImpl implements CommanderCommandExecutor {
         this.arguments = arguments;
     }
 
-    public Collection<CommandPredicate<CommandSender>> getPredicates() {
-        return predicates;
+    public Collection<CommandPredicate<CommandSender>> getPrePredicates() {
+        return prePredicates;
     }
 
-    public void setPredicates(Collection<CommandPredicate<CommandSender>> predicates) {
-        this.predicates = predicates;
+    public void setPrePredicates(Collection<CommandPredicate<CommandSender>> prePredicates) {
+        this.prePredicates = prePredicates;
     }
 
     @Override
@@ -54,8 +60,36 @@ public class CommanderCommandExecutorImpl implements CommanderCommandExecutor {
         this.aliases = aliases;
     }
 
+    @Nullable
+    private CommanderCommandExecutor findArgument(String argument) {
+        for (CommanderCommandExecutor commanderCommandExecutor : this.arguments) {
+            if (commanderCommandExecutor.isStringThisCommand(argument))
+                return commanderCommandExecutor;
+        }
+        return null;
+    }
+
     @Override
     public void run(ExecutedCommand<CommandSender> executedCommand) {
+        // Pre checks.
+        Optional<CommandPredicate<CommandSender>> predicateOptional = CommandPredicate.findPredicates(this.prePredicates, executedCommand);
+        if (predicateOptional.isPresent()) {
+            predicateOptional.get().onFail(executedCommand);
+            return;
+        }
+
+        // Argument check.
+        final String argument = executedCommand.getArg(0);
+        if (argument != null) {
+            final CommanderCommandExecutor argumentExecutor = this.findArgument(argument);
+            if (argumentExecutor != null) {
+                // Recreate a new ExecutedCommand object. Do not reuse.
+                argumentExecutor.run(ExecutedCommand.create(executedCommand, executedCommand.getOffsetArgument() + 1));
+                return;
+            }
+        }
+
+        // Run handlers
 
     }
 

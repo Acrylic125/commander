@@ -2,6 +2,7 @@ package com.acrylic.commander.executed;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -55,6 +56,7 @@ public final class ExecutedCommand<T extends CommandSender> {
         return Arrays.copyOfRange(this.args, this.offsetArgument, this.args.length - 1);
     }
 
+    @Nullable
     public String getArg(int index) {
         return this.getOriginalArg(index + offsetArgument);
     }
@@ -63,7 +65,12 @@ public final class ExecutedCommand<T extends CommandSender> {
         return Arrays.copyOf(this.args, this.args.length);
     }
 
+    @Nullable
     public String getOriginalArg(int index) {
         return (index < 0 || index >= this.args.length) ? null : this.args[index];
+    }
+
+    public int getOffsetArgument() {
+        return offsetArgument;
     }
 }

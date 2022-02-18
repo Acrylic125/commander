@@ -1,6 +1,6 @@
 package com.acrylic.commander.predicates;
 
-import com.acrylic.commander.command.ExecutedCommand;
+import com.acrylic.commander.executed.ExecutedCommand;
 import com.acrylic.commander.functional.ExecutedCommandConsumer;
 import org.bukkit.command.CommandSender;
 
