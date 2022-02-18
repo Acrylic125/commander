@@ -2,6 +2,7 @@ package com.acrylic.commander.executors;
 
 import com.acrylic.commander.executed.ExecutedCommand;
 import com.acrylic.commander.handler.CommandHandler;
+import com.acrylic.commander.predicates.CommandPermissionsPredicate;
 import com.acrylic.commander.predicates.CommandPredicate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -42,6 +43,10 @@ public final class CommanderCommandExecutor
         public Builder aliases(@NotNull String... aliases) {
             Collections.addAll(this.aliases, aliases);
             return this;
+        }
+
+        public Builder permission(CommandPermissionsPredicate<CommandSender> permissionsPredicate) {
+            return this.prefilter(permissionsPredicate);
         }
 
         public Builder prefilter(@NotNull CommandPredicate<CommandSender> filter) {
