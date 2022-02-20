@@ -154,7 +154,7 @@ public final class CommanderCommandExecutor
             if (argumentExecutorOptional.isPresent()) {
                 // Recreate a new ExecutedCommand object. Do not reuse.
                 argumentExecutorOptional.get()
-                        .runCommand(ExecutedCommand.create(executedCommand, executedCommand.getOffsetArgument() + 1));
+                        .runCommand(ExecutedCommand.create(executedCommand, executedCommand.getDepth() + 1));
                 return;
             }
         }

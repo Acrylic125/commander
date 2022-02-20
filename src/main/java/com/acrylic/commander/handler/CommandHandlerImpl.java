@@ -1,5 +1,6 @@
 package com.acrylic.commander.handler;
 
+import com.acrylic.commander.arguments.CommandParameter;
 import com.acrylic.commander.executed.ExecutedCommand;
 import com.acrylic.commander.functional.ExecutedCommandConsumer;
 import com.acrylic.commander.predicates.CommandPredicate;
@@ -14,6 +15,7 @@ public final class CommandHandlerImpl<T extends CommandSender>
 
     private Collection<CommandPredicate<T>> predicates = new Stack<>();
     private ExecutedCommandConsumer<T> handler;
+    private CommandParameter<?>[] parameters;
 
     public Collection<CommandPredicate<T>> getPredicates() {
         return predicates;

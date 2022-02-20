@@ -36,14 +36,14 @@ public final class ExecutedCommand<T extends CommandSender> {
     private final Command command;
     private final String label;
     private final String[] args;
-    private final int offsetArgument;
+    private final int depth;
 
-    ExecutedCommand(T sender, Command command, String label, String[] args, int offsetArgument) {
+    ExecutedCommand(T sender, Command command, String label, String[] args, int depth) {
         this.sender = sender;
         this.command = command;
         this.label = label;
         this.args = args;
-        this.offsetArgument = offsetArgument;
+        this.depth = depth;
     }
 
     public T getSender() {
@@ -59,12 +59,16 @@ public final class ExecutedCommand<T extends CommandSender> {
     }
 
     public String[] getArgs() {
-        return Arrays.copyOfRange(this.args, this.offsetArgument, this.args.length - 1);
+        return Arrays.copyOfRange(this.args, this.depth, this.args.length - 1);
     }
 
     @Nullable
     public String getArg(int index) {
-        return this.getOriginalArg(index + offsetArgument);
+        return this.getOriginalArg(index + depth);
+    }
+
+    public int sizeOfArgs() {
+        return this.args.length - this.depth;
     }
 
     public String[] getOriginalArgs() {
@@ -76,7 +80,11 @@ public final class ExecutedCommand<T extends CommandSender> {
         return (index < 0 || index >= this.args.length) ? null : this.args[index];
     }
 
-    public int getOffsetArgument() {
-        return offsetArgument;
+    public int sizeOfOriginalArgs() {
+        return this.args.length;
+    }
+
+    public int getDepth() {
+        return depth;
     }
 }
